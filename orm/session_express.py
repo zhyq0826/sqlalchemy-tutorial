@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 # noqa
 import random
+import time
 from db import engine, DBSession
 from model import Tag
 
 from sqlalchemy import func
+from sqlalchemy import inspect
 
 
 def create_tables():
@@ -106,9 +109,43 @@ def label_order_by():
         print i.id
 
 
+def print_insp_state(insp):
+    print('======>')
+    print('transient: %s ' % getattr(insp, 'transient', None))
+    print('pending: %s ' % getattr(insp, 'pending', None))
+    print('persistent: %s ' % getattr(insp, 'persistent', None))
+    print('deleted: %s ' % getattr(insp, 'deleted', None))
+    print('detached: %s ' % getattr(insp, 'detached', None))
+    print('attrs id %s' % insp.attrs.id.loaded_value)
+    print('attrs name %s' % insp.attrs.name.loaded_value)
+    print('<======')
+
+
+def insert_id_0():
+    """
+    调用 close session 会调用 expunge_all, session 移除 instance
+    session.expire 会让 instance attr 失效，next access will load from dbs
+    
+    http://docs.sqlalchemy.org/en/latest/orm/internals.html#sqlalchemy.orm.state.AttributeState.loaded_value
+    explain 0
+    https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_auto_value_on_zero
+    在 commit 发生之后，id attrs 变为 symbol('NO_VALUE')，再次取的时候会从数据库加载，但是根据这个主键已经找不到数据了
+    """
+    session = DBSession()
+    t = Tag()
+    t.id = 0
+    t.name = random.choice('abcdefgjoiuytreqzxcvbnml')
+    t.group_id = random.choice([1, 2, 3, 4, 5])
+    insp = inspect(t)
+    session.add(t)
+    session.commit()
+    print_insp_state(insp)
+    print t.id
+
+
 if __name__ == '__main__':
     # label_order_by()
-    count()
+    # count()
     # in_()
     # distinct()
     # select_columns()
@@ -118,3 +155,4 @@ if __name__ == '__main__':
     # delete()
     # update()
     # insert()
+    insert_id_0()

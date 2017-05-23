@@ -145,4 +145,4 @@ persisted instance is deleted from session and flush
 
 **detached**
 
-具有持久化状态的 instance 不在 session 中
+具有持久化状态的 instance 不在 session
