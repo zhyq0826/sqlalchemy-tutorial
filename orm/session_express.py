@@ -5,7 +5,11 @@ import time
 from db import engine, DBSession
 from model import Tag
 
-from sqlalchemy import func
+from sqlalchemy import (
+    func,
+    or_,
+    and_,
+)
 from sqlalchemy import inspect
 
 
@@ -38,7 +42,7 @@ def update():
     t.name = 'c'
     session.commit()
 
-
+#http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.delete
 def delete():
     session = DBSession()
     session.query(Tag).filter(Tag.id == 999).delete()
@@ -109,6 +113,13 @@ def label_order_by():
         print i.id
 
 
+# http://docs.sqlalchemy.org/en/latest/orm/tutorial.html#common-filter-operators
+def or_query():
+    session = DBSession()
+    for i in session.query(Tag).filter(or_(Tag.id == 10, Tag.id == 11)).all():
+        print i.id
+
+
 def print_insp_state(insp):
     print('======>')
     print('transient: %s ' % getattr(insp, 'transient', None))
@@ -155,4 +166,5 @@ if __name__ == '__main__':
     # delete()
     # update()
     # insert()
-    insert_id_0()
+    # insert_id_0()
+    or_query()
