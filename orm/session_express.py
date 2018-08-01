@@ -77,13 +77,15 @@ def select_columns():
 def distinct():
     session = DBSession()
     for i in session.query(func.distinct(Tag.group_id).label('gid')).all():
-        print i.id
+        print i.gid
 
 
 def in_():
     session = DBSession()
     for i in session.query(Tag).filter(Tag.id.in_([1, 3, 4])).all():
         print i.id
+    session.close()
+    print i.id
 
 
 def count():
@@ -157,7 +159,7 @@ def insert_id_0():
 if __name__ == '__main__':
     # label_order_by()
     # count()
-    # in_()
+    in_()
     # distinct()
     # select_columns()
     # group_by()
@@ -167,4 +169,4 @@ if __name__ == '__main__':
     # update()
     # insert()
     # insert_id_0()
-    or_query()
+    # or_query()

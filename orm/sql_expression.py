@@ -19,6 +19,11 @@ def sql_in():
     session = DBSession()
     sql = text("select * from tag where id in :id")
     print session.execute(sql, {'id': [10, 11, 12]}).fetchall()
+    print session.execute(sql, {'id': [-1, -2, -3]}).fetchall()
+    print session.execute(sql, {'id': [-1]}).first()
+    sql = text("select count(*) from tag where id in :id")
+    print session.execute(sql, {'id': [-1]}).first()
+    print session.execute(sql, {'id': [-1]}).scalar()
 
 
 if __name__ == '__main__':
