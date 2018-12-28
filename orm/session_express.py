@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # noqa
 import random
+import threading
 import time
 from db import engine, DBSession
 from model import Tag
@@ -42,6 +43,15 @@ def update():
     t.name = 'c'
     session.commit()
 
+
+def update2():
+    session = DBSession()
+    t = session.query(Tag).filter(Tag.id == 1).update({
+        "name": "c"})
+    t = session.query(Tag).filter(Tag.id == 2).update({Tag.name: "c"})
+    session.commit()
+
+
 #http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query.delete
 def delete():
     session = DBSession()
@@ -51,8 +61,11 @@ def delete():
 
 def order_by():
     session = DBSession()
-    for i in session.query(Tag).order_by(Tag.id.desc()).limit(10):
+    for i in session.query(Tag).limit(1):
         print i.id
+
+    time.sleep(2)
+    session.close()
 
 
 def limit_offset():
@@ -156,10 +169,24 @@ def insert_id_0():
     print t.id
 
 
+def test_pool_recyle():
+
+    thread_list = []
+    for _ in range(3):
+        t = threading.Thread(target=order_by)
+        thread_list.append(t)
+
+    for t in thread_list:
+        t.start()
+
+    for t in thread_list:
+        t.join()
+
+
 if __name__ == '__main__':
     # label_order_by()
     # count()
-    in_()
+    # in_()
     # distinct()
     # select_columns()
     # group_by()
@@ -170,3 +197,4 @@ if __name__ == '__main__':
     # insert()
     # insert_id_0()
     # or_query()
+    order_by()
