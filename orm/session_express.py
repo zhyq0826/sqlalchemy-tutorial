@@ -62,7 +62,8 @@ def delete():
 def order_by():
     session = DBSession()
     for i in session.query(Tag).limit(1):
-        print i.id
+        pass
+        # print i.id
 
     time.sleep(2)
     session.close()
@@ -169,10 +170,9 @@ def insert_id_0():
     print t.id
 
 
-def test_pool_recyle():
-
+def with_thread_test_pool_recyle():
     thread_list = []
-    for _ in range(3):
+    for _ in range(15):
         t = threading.Thread(target=order_by)
         thread_list.append(t)
 
@@ -181,6 +181,24 @@ def test_pool_recyle():
 
     for t in thread_list:
         t.join()
+
+
+def test_pool_recyle():
+    while 1:
+        print('thread start')
+        with_thread_test_pool_recyle()
+        print('thread end')
+        time.sleep(60)
+        print('one query start')
+        order_by()
+        order_by()
+        order_by()
+        order_by()
+        order_by()
+        order_by()
+        order_by()
+        print('one query end')
+        time.sleep(60)
 
 
 if __name__ == '__main__':
@@ -197,4 +215,5 @@ if __name__ == '__main__':
     # insert()
     # insert_id_0()
     # or_query()
-    order_by()
+    # order_by()
+    test_pool_recyle()
