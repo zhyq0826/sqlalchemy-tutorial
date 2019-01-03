@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 # noqa
+
+from db import engine, DBSession
+
+import gevent
+
 import random
 import threading
 import time
-from db import engine, DBSession
 from model import Tag
 
 from sqlalchemy import (
@@ -65,7 +69,7 @@ def order_by():
         pass
         # print i.id
 
-    time.sleep(2)
+    # time.sleep(2)
     session.close()
 
 
@@ -172,7 +176,7 @@ def insert_id_0():
 
 def with_thread_test_pool_recyle():
     thread_list = []
-    for _ in range(15):
+    for _ in range(5):
         t = threading.Thread(target=order_by)
         thread_list.append(t)
 
@@ -188,17 +192,17 @@ def test_pool_recyle():
         print('thread start')
         with_thread_test_pool_recyle()
         print('thread end')
-        time.sleep(60)
-        print('one query start')
-        order_by()
-        order_by()
-        order_by()
-        order_by()
-        order_by()
-        order_by()
-        order_by()
-        print('one query end')
-        time.sleep(60)
+        gevent.sleep(300)
+        # print('one query start')
+        # order_by()
+        # order_by()
+        # order_by()
+        # order_by()
+        # order_by()
+        # order_by()
+        # order_by()
+        # print('one query end')
+        # time.sleep(30)
 
 
 if __name__ == '__main__':
